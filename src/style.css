@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #faf7f5;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Improve checkbox and radio visibility */
+.p-checkbox .p-checkbox-box {
+  border: 2px solid #6b7280 !important;
+}
+
+.p-radiobutton .p-radiobutton-box {
+  border: 2px solid #6b7280 !important;
+}
+
+/* Make the entire night selection area clickable */
+.night-selection-label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.night-selection-label:hover {
+  background-color: #f3f4f6;
+}
+
+/* Enhanced input styling */
+.p-float-label {
+  display: block;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.p-float-label label {
+  left: 0.5rem !important;
+  top: 0.75rem !important;
+  padding: 0 0.25rem;
+  background-color: white;
+  color: #6b7280;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.p-float-label input:focus ~ label,
+.p-float-label input.p-filled ~ label,
+.p-float-label textarea:focus ~ label,
+.p-float-label textarea.p-filled ~ label {
+  top: -0.5rem !important;
+  font-size: 0.75rem !important;
+  color: #3b82f6 !important;
+}
+
+.p-float-label input,
+.p-float-label textarea,
+.p-password input {
+  border: 2px solid #e5e7eb !important;
+  border-radius: 0.375rem !important;
+  width: 100% !important;
+  transition: border-color 0.2s !important;
+  padding: 0.75rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
+.p-float-label input:focus,
+.p-float-label textarea:focus,
+.p-password input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px #bfdbfe !important;
+}
+
+.p-float-label input:hover,
+.p-float-label textarea:hover,
+.p-password input:hover {
+  border-color: #9ca3af !important;
+}
+
+/* Password toggle button styling */
+.p-password-panel {
+  margin-top: 0.5rem !important;
+  border-radius: 0.375rem !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+/* Password input specific adjustments */
+.p-password {
+  width: 100%;
+}
+
+.p-password .p-password-input {
+  padding-right: 2.5rem !important;
+}
+
+/* PrimeVue Button Colors */
+.p-button.p-button-primary {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.p-button.p-button-primary:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.p-button.p-button-primary:focus {
+  box-shadow: 0 0 0 2px #bfdbfe !important;
+}
