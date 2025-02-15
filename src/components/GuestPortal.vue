@@ -1,8 +1,9 @@
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { MapPinIcon } from '@heroicons/vue/24/outline'
+import type {GuestInfo, RsvpChoice, Location, ScheduleEvent} from '@/types'
 
-const guestInfo = ref({
+const guestInfo = ref<GuestInfo>({
   guest1: {
     name: "John Doe",
     email: "john.doe@email.com",
@@ -35,81 +36,91 @@ const guestInfo = ref({
   }
 })
 
-const nightOrder = ['friday', 'saturday', 'sunday', 'monday']
+// const nightOrder = ['friday', 'saturday', 'sunday', 'monday'] as const
+//
+// type NightSelectionState = {
+//   friday: boolean
+//   saturday: boolean
+//   sunday: boolean
+//   monday: boolean
+// }
+//
+// const selectedNights = ref<NightSelectionState>({
+//   friday: false,
+//   saturday: false,
+//   sunday: false,
+//   monday: false
+// })
+//
+// // Compute the first selected night's index
+// const firstSelectedNightIndex = computed(() => {
+//   return nightOrder.findIndex(night => selectedNights.value[night])
+// })
+//
+// // Compute the last selected night's index
+// const lastSelectedNightIndex = computed(() => {
+//   return nightOrder.findIndex(night => selectedNights.value[night])
+// })
+//
+// // Compute whether a night should be disabled
+// const isNightDisabled = computed(() => {
+//   return (night: keyof NightSelection) => {
+//     const nightIndex = nightOrder.indexOf(night)
+//
+//     // If no nights are selected, all nights are available
+//     if (firstSelectedNightIndex.value === -1) return false
+//
+//     // If this night is already selected, it's not disabled
+//     if (selectedNights.value[night]) return false
+//
+//     // If this night is before the first selected night, it's disabled
+//     if (nightIndex < firstSelectedNightIndex.value) return true
+//
+//     // If this night is after the last selected night and not adjacent, it's disabled
+//     if (nightIndex > lastSelectedNightIndex.value + 1) return true
+//
+//     // If this night creates a gap between selected nights, it's disabled
+//     if (nightIndex > firstSelectedNightIndex.value) {
+//       // Check if all nights between first selected and this night are selected
+//       for (let i = firstSelectedNightIndex.value; i < nightIndex; i++) {
+//         if (!selectedNights.value[nightOrder[i]]) return true
+//       }
+//     }
+//
+//     return false
+//   }
+// })
+//
+// const handleNightSelection = (night: keyof NightSelection) => {
+//   const nightIndex = nightOrder.indexOf(night)
+//
+//   if (!selectedNights.value[night]) {
+//     // When deselecting a night
+//     // If this night is between two selected nights, deselect all nights after it
+//     if (nightIndex < lastSelectedNightIndex.value) {
+//       for (let i = nightIndex; i <= lastSelectedNightIndex.value; i++) {
+//         selectedNights.value[nightOrder[i]] = false
+//       }
+//     } else {
+//       // Just deselect this night
+//       selectedNights.value[night] = false
+//     }
+//   } else {
+//     // When selecting a night
+//     // Only allow selection if the night is not disabled
+//     if (!isNightDisabled.value(night)) {
+//       selectedNights.value[night] = true
+//     } else {
+//       // Prevent the selection if the night is disabled
+//       selectedNights.value[night] = false
+//     }
+//   }
+// }
 
-const selectedNights = ref({
-  friday: false,
-  saturday: false,
-  sunday: false,
-  monday: false
-})
-
-// Compute the first selected night's index
-const firstSelectedNightIndex = computed(() => {
-  return nightOrder.findIndex(night => selectedNights.value[night])
-})
-
-// Compute the last selected night's index
-const lastSelectedNightIndex = computed(() => {
-  return nightOrder.findLastIndex(night => selectedNights.value[night])
-})
-
-// Compute whether a night should be disabled
-const isNightDisabled = computed(() => {
-  return (night) => {
-    const nightIndex = nightOrder.indexOf(night)
-    
-    // If no nights are selected, all nights are available
-    if (firstSelectedNightIndex.value === -1) return false
-    
-    // If this night is already selected, it's not disabled
-    if (selectedNights.value[night]) return false
-    
-    // If this night is before the first selected night, it's disabled
-    if (nightIndex < firstSelectedNightIndex.value) return true
-    
-    // If this night is after the last selected night and not adjacent, it's disabled
-    if (nightIndex > lastSelectedNightIndex.value + 1) return true
-    
-    // If this night creates a gap between selected nights, it's disabled
-    if (nightIndex > firstSelectedNightIndex.value) {
-      // Check if all nights between first selected and this night are selected
-      for (let i = firstSelectedNightIndex.value; i < nightIndex; i++) {
-        if (!selectedNights.value[nightOrder[i]]) return true
-      }
-    }
-    
-    return false
-  }
-})
-
-const handleNightSelection = (night, value) => {
-  const nightIndex = nightOrder.indexOf(night)
-  
-  if (!value) {
-    // When deselecting a night
-    // If this night is between two selected nights, deselect all nights after it
-    if (nightIndex < lastSelectedNightIndex.value) {
-      for (let i = nightIndex; i <= lastSelectedNightIndex.value; i++) {
-        selectedNights.value[nightOrder[i]] = false
-      }
-    } else {
-      // Just deselect this night
-      selectedNights.value[night] = false
-    }
-  } else {
-    // When selecting a night
-    // Only allow selection if the night is not disabled
-    if (!isNightDisabled.value(night)) {
-      selectedNights.value[night] = true
-    } else {
-      // Prevent the selection if the night is disabled
-      selectedNights.value[night] = false
-    }
-  }
-}
-
-const schedule = [
+const schedule: {
+    day: string
+    events: ScheduleEvent[]
+}[] = [
   {
     day: "Friday",
     events: [
@@ -160,27 +171,34 @@ const schedule = [
 const showEditModal = ref(false)
 const showRsvpModal = ref(false)
 const showLocationModal = ref(false)
-const selectedLocation = ref(null)
-const editingGuest = ref(null)
-const editingGuestData = ref({})
+const selectedLocation = ref<Location | null>(null)
+const editingGuest = ref<'guest1' | 'guest2' | null>(null)
+const editingGuestData = ref<GuestInfo['guest1']>({
+  name: '',
+  email: '',
+  phone: '',
+  address: ''
+})
 const rsvpSubmitted = ref(false)
-const rsvpChoice = ref('')
+const rsvpChoice = ref<RsvpChoice>('')
 const customBudget = ref('')
 
-const openEditModal = (guest) => {
+const openEditModal = (guest: 'guest1' | 'guest2') => {
   editingGuest.value = guest
   editingGuestData.value = { ...guestInfo.value[guest] }
   showEditModal.value = true
 }
 
-const openLocationModal = (location) => {
+const openLocationModal = (location: Location) => {
   selectedLocation.value = location
   showLocationModal.value = true
 }
 
 const saveGuestInfo = () => {
-  guestInfo.value[editingGuest.value] = { ...editingGuestData.value }
-  showEditModal.value = false
+  if (editingGuest.value) {
+    guestInfo.value[editingGuest.value] = { ...editingGuestData.value }
+    showEditModal.value = false
+  }
 }
 
 const submitRsvp = () => {
@@ -188,9 +206,9 @@ const submitRsvp = () => {
   showRsvpModal.value = false
 }
 
-const totalCost = computed(() => {
-  return rsvpChoice.value === 'budget' && customBudget.value ? parseInt(customBudget.value) : 450
-})
+// const totalCost = computed(() => {
+//   return rsvpChoice.value === 'budget' && customBudget.value ? parseInt(customBudget.value) : 450
+// })
 </script>
 
 <template>
@@ -338,26 +356,26 @@ const totalCost = computed(() => {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 class="font-medium text-gray-900 mb-2">Your Stay</h3>
-                    <div class="space-y-2">
-                      <ul class="mt-1 space-y-1">
-                        <template v-for="(isSelected, night) in selectedNights" :key="night">
-                          <li v-if="isSelected" class="text-gray-600 capitalize">
-                            {{ night }}
-                          </li>
-                        </template>
-                      </ul>
-                      <div class="mt-4">
-                        <p class="text-lg font-medium text-gray-900">
-                          Requested Contribution: ${{ totalCost }}
-                        </p>
-                        <p class="text-sm text-gray-600 mt-1">
-                          To contribute, please venmo Christina at @christinasvenmo
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+<!--                  <div>-->
+<!--                    <h3 class="font-medium text-gray-900 mb-2">Your Stay</h3>-->
+<!--                    <div class="space-y-2">-->
+<!--                      <ul class="mt-1 space-y-1">-->
+<!--                        <template v-for="(isSelected, night) in selectedNights" :key="night">-->
+<!--                          <li v-if="isSelected" class="text-gray-600 capitalize">-->
+<!--                            {{ night }}-->
+<!--                          </li>-->
+<!--                        </template>-->
+<!--                      </ul>-->
+<!--                      <div class="mt-4">-->
+<!--                        <p class="text-lg font-medium text-gray-900">-->
+<!--                          Requested Contribution: ${{ totalCost }}-->
+<!--                        </p>-->
+<!--                        <p class="text-sm text-gray-600 mt-1">-->
+<!--                          To contribute, please venmo Christina at @christinasvenmo-->
+<!--                        </p>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
                 </div>
               </template>
             </Card>
@@ -436,7 +454,6 @@ const totalCost = computed(() => {
           <Button
             label="Open in Google Maps"
             severity="primary"
-            :link="selectedLocation?.mapUrl"
             target="_blank"
           />
         </div>
@@ -448,7 +465,7 @@ const totalCost = computed(() => {
             width="100%"
             height="100%"
             style="border:0;"
-            allowfullscreen=""
+            :allowfullscreen="false"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
@@ -489,26 +506,26 @@ const totalCost = computed(() => {
           </div>
 
           <!-- Night Selection -->
-          <div class="mb-6">
-            <h4 class="text-lg font-medium text-gray-900 mb-2">Select Your Nights</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div v-for="(_, night) in selectedNights" :key="night">
-                <label :for="'modal-' + night" class="night-selection-label">
-                  <Checkbox
-                    :id="'modal-' + night"
-                    v-model="selectedNights[night]"
-                    :binary="true"
-                    :disabled="isNightDisabled(night)"
-                    @change="(e) => handleNightSelection(night, e)"
-                  />
-                  <span class="ml-2 text-sm text-gray-900 capitalize">
-                    {{ night }} Night
-                  </span>
-                </label>
-              </div>
-            </div>
-            <p class="mt-2 text-sm text-gray-600">Requested Contribution: $450</p>
-          </div>
+<!--          <div class="mb-6">-->
+<!--            <h4 class="text-lg font-medium text-gray-900 mb-2">Select Your Nights</h4>-->
+<!--            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">-->
+<!--              <div v-for="(night) in selectedNights" :key="night">-->
+<!--                <label :for="'modal-' + night" class="night-selection-label">-->
+<!--                  <Checkbox-->
+<!--                    :id="'modal-' + night"-->
+<!--                    v-model="selectedNights[night]"-->
+<!--                    :binary="true"-->
+<!--                    :disabled="isNightDisabled(night)"-->
+<!--                    @change="() => handleNightSelection(night)"-->
+<!--                  />-->
+<!--                  <span class="ml-2 text-sm text-gray-900 capitalize">-->
+<!--                    {{ night }} Night-->
+<!--                  </span>-->
+<!--                </label>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <p class="mt-2 text-sm text-gray-600">Requested Contribution: $450</p>-->
+<!--          </div>-->
 
           <!-- RSVP Options -->
           <div class="space-y-4">
